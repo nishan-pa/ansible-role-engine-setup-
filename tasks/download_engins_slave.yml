@@ -1,0 +1,14 @@
+---
+- name: Download Engine Slave Jar from Download Server
+  get_url:
+    url: http://downloads.razorthink.net/bigbrain/docker/engine-slave.jar
+    dest: /tmp/engine-slave.jar
+  delegate_to: 127.0.0.1
+  when: not local
+
+- name: Copying Engine Slave Jar to the Remote Server
+  copy:
+    src: /tmp/engine-slave.jar
+    dest: /ebs/bigbrain_jars
+    owner: "{{ bigbrain_user }}"
+  when: not local

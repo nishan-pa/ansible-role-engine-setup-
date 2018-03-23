@@ -1,0 +1,5 @@
+---
+##The variable can be define here
+bigbrain_user: bigbrain
+
+local: false   #not local

@@ -1,0 +1,8 @@
+---
+- hosts: ServerB
+  tasks:
+    - name: Transfer file from ServerA to ServerB
+      synchronize:
+        src: /path/on/server_a
+        dest: /path/on/server_b
+      delegate_to: ServerA

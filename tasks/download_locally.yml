@@ -1,0 +1,95 @@
+---
+- name: Download bbciutils from Download Server
+  get_url: 
+    url: 'http://downloads.razorthink.net/bigbrain/py-libs/{{item}}'
+    dest: '/tmp/{{item}}'
+  with_items:
+  - bbcliutils-0.1-py2.py3-none-any.whl
+  - bigbrain_python_sdk-0.0.2-py3-none-any.whl
+  - cookbook_macros-0.1-py2.py3-none-any.whl
+  - model_factory-0.1-py3-none-any.whl
+  - rztdl-0.1.5-py3-none-any.whl
+  - rztfe-0.1-py2.py3-none-any.whl
+  delegate_to: 127.0.0.1
+  become: true
+  become_method: sudo
+  when: not local 
+
+- name: Download bbciutils from Download Server in local env
+  get_url:
+    url: 'http://downloads.razorthink.net/bigbrain/py-libs/{{item}}'
+    dest: '/tmp/{{item}}'
+  with_items:
+  - bbcliutils-0.1-py2.py3-none-any.whl
+  - bigbrain_python_sdk-0.0.2-py3-none-any.whl
+  - cookbook_macros-0.1-py2.py3-none-any.whl
+  - model_factory-0.1-py3-none-any.whl
+  - rztdl-0.1.5-py3-none-any.whl
+  - rztfe-0.1-py2.py3-none-any.whl
+  become: true
+  become_method: sudo
+  when: local
+
+- name: Copying Whl files to Destination Server
+  copy:
+    src: '/tmp/{{item}}'
+    dest: '/tmp/{{item}}'
+  with_items:
+  - bbcliutils-0.1-py2.py3-none-any.whl
+  - bigbrain_python_sdk-0.0.2-py3-none-any.whl
+  - cookbook_macros-0.1-py2.py3-none-any.whl
+  - model_factory-0.1-py3-none-any.whl
+  - rztdl-0.1.5-py3-none-any.whl
+  - rztfe-0.1-py2.py3-none-any.whl
+  when: not local
+
+- name: Installing all the Python Packages
+  shell: pip3 install /tmp/*.whl
+
+- name: Upgrade Tensorflow
+  pip:
+    name: tensorflow
+    extra_args: --upgrade
+    executable: pip3.5
+ 
+- name: Download Engine Jar from Download Server
+  get_url:
+    url: http://downloads.razorthink.net/bigbrain/docker/engine.jar
+    dest: /tmp/engine.jar
+  delegate_to: 127.0.0.1
+  when: not local
+
+- name: Download Engine Jar from Download Server in local env
+  get_url:
+    url: http://downloads.razorthink.net/bigbrain/docker/engine.jar
+    dest: /ebs/bigbrain_jars/engine.jar
+  become: true
+  become_user: "{{ bigbrain_user }}"
+  when: local
+
+- name: Copying Engine Jar to the Remote Server
+  copy: 
+    src: /tmp/engine.jar
+    dest: /ebs/bigbrain_jars
+    owner: "{{ bigbrain_user }}"
+  when: not local
+
+- name: Copying Engine Startup Script
+  template:
+    src: start-engine.sh.j2
+    dest: "/home/{{ bigbrain_user }}/start-engine.sh"
+    owner: "{{ bigbrain_user }}"
+
+- name: Copying Engine cfg configuration
+  template:
+    src: cfg.json.j2
+    dest: "/home/{{ bigbrain_user }}/bigbrain/sdk/cfg.json"
+    owner: "{{ bigbrain_user }}"
+
+- name: Starting Engine Jar
+  shell: bash -x /home/{{ bigbrain_user }}/start-engine.sh
+  become: true
+  become_user: "{{ bigbrain_user }}"
+  async: 2592000
+  poll: 0
+

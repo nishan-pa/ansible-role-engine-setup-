@@ -1,0 +1,5 @@
+{ "conf": {
+    "HDFS_HOST": "hdfs://{{ hostvars[inventory_hostname]['ansible_default_ipv4']['address'] }}:9000",
+    "HADOOP_USER_NAME": "'{{ bigbrain_user }}'"
+   }
+}

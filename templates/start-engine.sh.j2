@@ -1,0 +1,20 @@
+#!/bin/bash
+
+RESULT=`lsof -t -i:9090 |wc -l`
+
+echo ">> Starting Engine JAR <<"
+
+kill -9 `lsof -t -i:9090`
+nohup java -jar /ebs/bigbrain_jars/engine.jar > /dev/null 2>&1 &
+
+
+      if [ $RESULT -eq 1 ]; then
+
+echo ">> Engine Jar is running... <<"
+
+else
+  echo ">> Jar is not started <<"
+   fi
+
+exit 0
+

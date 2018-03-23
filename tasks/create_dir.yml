@@ -1,0 +1,32 @@
+---
+- name: Creating user group if not exists
+  group:
+    name: "{{ bigbrain_user }}"
+    state: present
+
+- name: Creating Bigbrain user
+  user:
+    name: "{{ bigbrain_user }}"
+    shell: /bin/bash
+    group: "{{ bigbrain_user }}"
+    append: yes
+
+
+- name: Creating install directory
+  file:
+    path: /ebs/bigbrain_jars
+    state: directory
+    owner: "{{ bigbrain_user }}"
+    group: "{{ bigbrain_user }}"
+    recurse: yes
+    mode: 0755
+
+- name: Creating Sdk directory
+  file:
+    path: /home/{{ bigbrain_user }}/bigbrain/sdk
+    state: directory
+    owner: "{{ bigbrain_user }}"
+    group: "{{ bigbrain_user }}"
+    recurse: yes
+    mode: 0755
+
